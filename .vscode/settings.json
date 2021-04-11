@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "time.h": "c",
+        "bitset": "c",
+        "initializer_list": "c",
+        "memory": "c",
+        "string": "c",
+        "utility": "c"
+    }
+}
