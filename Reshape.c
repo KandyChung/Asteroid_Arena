@@ -18,6 +18,4 @@ void on_reshape(int w, int h)
 
   g_screen_width = w;
   g_screen_height = h;
-  widthX = g_screen_width/2;
-  heightY = g_screen_height/2;
 }

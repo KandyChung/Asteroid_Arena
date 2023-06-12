@@ -5,6 +5,8 @@
         "initializer_list": "c",
         "memory": "c",
         "string": "c",
-        "utility": "c"
+        "utility": "c",
+        "particle.h": "c",
+        "glutheader.h": "c"
     }
 }

@@ -3,22 +3,29 @@
 
 bool upKeyPressed = false;
 bool mouseLeftKeyPressed = false;
+bool rKeyPressed = false;
 
-void move_forward(ship_t *so)
+void move_forward()
 {
-  so->pos.x -= so->vel * -sinf(so->rc * 3.14159 / 180);
-  so->pos.y += so->vel * cosf(so->rc * 3.14159 / 180);
+  ship.pos.x -= ship.vel * -sinf(ship.rc * 3.14159 / 180);
+  ship.pos.y += ship.vel * cosf(ship.rc * 3.14159 / 180);
 }
 
-void turn_left(ship_t *so)
+void turn_left()
 {
-
-  so->rc -= so->rd;
+  ship.rc -= ship.rd;
 }
 
-void turn_right(ship_t *so)
+void turn_right()
 {
-  so->rc += so->rd;
+  ship.rc += ship.rd;
+}
+
+void disable_move()
+{
+  ship.pos.x += 0;
+  ship.pos.y += 0;
+  ship.rc += 0;
 }
 
 void on_key_press(unsigned char key, int x, int y)
@@ -26,15 +33,32 @@ void on_key_press(unsigned char key, int x, int y)
   switch (key) 
   {
     case KEY_FORWARD:
-      move_forward(&ship);
-      upKeyPressed = true;
+      if(is_game_over()){
+        disable_move();
+      }else{
+        move_forward();
+        upKeyPressed = true;
+      }
       break;
     case KEY_LEFT:
-      turn_left(&ship);
+      if(is_game_over()){
+        disable_move();
+      }else{
+        turn_left();
+      }
       break;
-      case KEY_RIGHT:
-      turn_right(&ship);
+    case KEY_RIGHT:
+      if(is_game_over()){
+        disable_move();
+      }else{
+        turn_right();
+      }
       break;
+      case 'r':
+        rKeyPressed = true;
+        ship.is_ship_dead = false;
+        reset();
+        break;
     case KEY_ESC:
       exit(EXIT_SUCCESS);
       break;
@@ -42,6 +66,7 @@ void on_key_press(unsigned char key, int x, int y)
       break;
   }
 }
+
 
 void on_key_release(unsigned char key, int x, int y)
 {

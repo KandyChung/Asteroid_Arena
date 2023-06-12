@@ -1,84 +1,60 @@
 #include "GLUTHeader.h"
 #include "Asteroid.h"
 
+int num_segments = 100;
+
 float set_asteroidX_random_postion(int max, int min)
 {
   int astX = 0;
   int randX = min + rand() % (max - min + 1);
-  
-  return randX;
+
+  if (randX < -g_screen_width/2 || randX > g_screen_width/2)
+  {
+    astX = randX;
+  }
+  else if (randX > -g_screen_width/2 && randX < 0)
+  {
+    astX = randX + -g_screen_width/2;
+  }
+  else if (randX > 0 && randX < g_screen_width/2)
+  {
+    astX = randX + g_screen_width/2;
+  }
+
+  return astX;
 }
 
 float set_asteroidY_random_postion(int max, int min)
 {
-  int astY ;
+  int astY = 0;
   int randY = min + rand() % (max - min + 1);
-  
-  return randY;
-}
 
-int diractionX(asteroid_t *ast)
-{
-  int dirX;
-  for (int i = 0; i < NUM_ASTEROID; i++)
+  if (randY < -g_screen_height/2 || randY > g_screen_height/2)
   {
-    if(ast[i].pos.x > 0 && ast[i].pos.y > 0)
-    {
-      dirX = MOVING_LEFT_DOWN;
-    }
-    else if(ast[i].pos.x < 0 && ast[i].pos.y < 0)
-    {
-      dirX = MOVING_RIGHT_UP;
-    }
-    else if(ast[i].pos.x > 0 && ast[i].pos.y < 0)
-    {
-      dirX = MOVING_LEFT_DOWN;
-    }
-    else if(ast[i].pos.x < 0 && ast[i].pos.y > 0)
-    {
-      dirX = MOVING_RIGHT_UP;
-    }
+    astY = randY;
   }
-  return dirX;
-}
-
-int diractionY(asteroid_t *ast)
-{
-  int dirY;
-  for (int i = 0; i < NUM_ASTEROID; i++)
+  else if (randY > -g_screen_height/2 && randY < 0)
   {
-    if(ast[i].pos.x > 0 && ast[i].pos.y > 0)
-    {
-      dirY = MOVING_LEFT_DOWN;
-    }
-    else if(ast[i].pos.x < 0 && ast[i].pos.y < 0)
-    {
-      dirY = MOVING_RIGHT_UP;
-    }
-    else if(ast[i].pos.x > 0 && ast[i].pos.y < 0)
-    {
-      dirY = MOVING_RIGHT_UP;
-    }
-    else if(ast[i].pos.x < 0 && ast[i].pos.y > 0)
-    {
-      dirY = MOVING_LEFT_DOWN;
-    }
+    astY = randY + -g_screen_height/2;
   }
-  return dirY;
-}
+  else if (randY > 0 && randY < g_screen_height/2)
+  {
+    astY = randY + g_screen_height/2;
+  }
 
-//rand() % (max_number + 1 - minimum_number) + minimum_number
+  return astY;
+}
 
 void asteroid_int(asteroid_t *ast)
 {
   ast->r = ASTEROID_RADIANS;
   ast->pos.x = set_asteroidX_random_postion(g_screen_width/2 + 100, -g_screen_width/2 - 100);
   ast->pos.y = set_asteroidY_random_postion(g_screen_height/2 + 100, -g_screen_height/2 - 100);
-  ast->dir.x = diractionX(asteroid);
-  ast->dir.y = diractionY(asteroid);
+  ast->dir.x = rand() % (MAX_DIRACTION - MIN_DIRACTION + 1) + MIN_DIRACTION;
+  ast->dir.y = rand() % (MAX_DIRACTION - MIN_DIRACTION + 1) + MIN_DIRACTION;
   ast->rc = rand() % 360;
-  ast->rd = 45;
-  ast->vel = rand() % (100 - 90) + 90;
+  ast->rd = 40;
+  ast->vel = rand() % (MAX_SPEED - MIN_SPEED + 1) + MIN_SPEED;
   ast->isAsteroidDead = false;
   fprintf(stderr, "Ast locationX: %f\n", ast->pos.x);
   fprintf(stderr, "Ast locationY: %f\n", ast->pos.y);
@@ -88,14 +64,13 @@ void asteroid_int(asteroid_t *ast)
 
 void asteroid_frame(asteroid_t *ast) 
 {
-  int num_segments = 100;
+  
   for(int i = 0; i < NUM_ASTEROID; i++)
   {
     if(!ast[i].isAsteroidDead)
     {
       glPushMatrix();
       glColor3f(1, 1, 1);
-      // glTranslatef(ast->pos.x, ast->pos.y, 0);
       glTranslatef(ast[i].pos.x, ast[i].pos.y, 0);
       glRotatef(ast[i].rc, 0, 0, 1);
       glBegin(GL_LINE_LOOP);
@@ -107,28 +82,22 @@ void asteroid_frame(asteroid_t *ast)
         glVertex2f(x , y);
       }
       glEnd();
-      // glTranslatef(ast->pos.x, ast->pos.y, 0);
-      // glTranslatef(ast[i].pos.x, ast[i].pos.y, 0);
       glBegin(GL_LINE_LOOP);
-      glVertex3f(40, 20, 0);
-      glVertex3f(34, 6, 0);
-      glVertex3f(41, -12, 0);
-      glVertex3f(14, -50, 0);
-      glVertex3f(2, -36, 0);
-      glVertex3f(-22, -48, 0);
-      glVertex3f(-30, -14, 0);
-      glVertex3f(-48, -12, 0);
-      glVertex3f(-36, 32, 0);
-      glVertex3f(-16, 31, 0);
-      glVertex3f(-10, 42, 0);
+      glVertex3f(0, ast[i].r, 0);
+      glVertex3f(ast[i].r*sin(45), ast[i].r*sin(45), 0);
+      glVertex3f(ast[i].r, 0, 0);
+      glVertex3f(0, -ast[i].r, 0);
+      glVertex3f(-ast[i].r*sin(45), -ast[i].r*sin(45), 0);
+      glVertex3f(-ast[i].r, 0, 0);
+      glVertex3f(-ast[i].r*cos(45), ast[i].r*sin(45), 0);
       glEnd();
-      // fprintf(stderr, "%d: (%f,%f)\n", i, ast->pos.x, ast->pos.y);
       glPopMatrix();
     }
+    
   }
 }
 
-void delet_asteroid(asteroid_t *ast)
+void delete_asteroid(asteroid_t *ast)
 {
   for (int i = 0; i < NUM_ASTEROID; i++)
   {
@@ -136,7 +105,6 @@ void delet_asteroid(asteroid_t *ast)
     {
       ast[i].pos.x = set_asteroidX_random_postion(g_screen_width/2 + 100, -g_screen_width/2 - 100);
       ast[i].pos.y = set_asteroidY_random_postion(g_screen_height/2 + 100, -g_screen_height/2 - 100);
-      fprintf(stderr, "asteroid %d dead: (%f, %f)\n", i, ast[i].pos.x, ast[i].pos.y);
     }
   }
 }

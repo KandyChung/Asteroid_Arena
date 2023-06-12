@@ -20,12 +20,14 @@
 
 
 #include "Reshape.h"
+#include "Wall.h"
 #include "Ship.h"
 #include "Asteroid.h"
 #include "Bullets.h"
 #include "KeyboradController.h"
 #include "Idle.h"
 #include "CollisionDetection.h"
+#include "game.h"
 
 void on_display()
 {   
@@ -33,42 +35,41 @@ void on_display()
   glMatrixMode(GL_MODELVIEW); 
   glLoadIdentity(); 
 
-  glTranslatef(widthX, heightY, 0);
-  asteroid_frame(asteroid);
-  
-  if(is_close_collision(&ship)) //Simpify
-  {
-    red_line_box_frame();
-  }
-  game_box_frame();
-  ship_frame(&ship);
-  
+  glTranslatef(g_screen_width/2, g_screen_height/2, 0);
 
-  if(is_collided_wall(&ship))
+  if (!rKeyPressed)
   {
-    ship_int(&ship);
+    text_frame(-150, 0,  "Press 'r' to start...");
   }
-
-  for (int i = 0; i < NUM_ASTEROID; i++)
-  {
-    if(is_collied_ship(&ship, &asteroid[i]))
+  else{
+    asteroid_frame(asteroid);
+    display_red_line_box_when_close_to_wall();
+    ship_frame(&ship);
+    
+    if(is_game_over())
     {
-      ship_int(&ship);
+      text_frame(-200, 0,  "Game Over. Press 'r' to play again...");
     }
-  }
-  
-
-  if (upKeyPressed)
-  {
-    particle_puff_frame(&ship);
-  }
-
-  for (int i = 0; i < NUM_ASTEROID; i++)
-  {
-    if(!is_collied_bullets(&bullets[i], &asteroid[i]))
+    if (upKeyPressed)
     {
-      bullets_frame(&bullets[i]);
+      particle_puff_frame(&ship);
     }
+
+    for (int i = 0; i < NUM_ASTEROID; i++)
+    {
+      for (int j = 0; j < NUM_BULLETS; j++)
+      {
+        if(!is_collied_bullets_and_asteroid(&bullets[j], &asteroid[i]))
+        {
+          bullets_frame(&bullets[j]);
+        }
+      }
+    }
+    text_frame(-g_screen_width/2 + 20, g_screen_height/2 - 40, "Score:");
+    score_frame(-g_screen_width/2 + 130, g_screen_height/2 - 40, 15, score);
+    text_frame(g_screen_width/2 - 290, g_screen_height/2 - 40, "Asteroid Destroyed:");
+    score_frame(g_screen_width/2 - 60, g_screen_height/2 - 40, 15, num_asteroid_destroy);
+    score_frame(0, g_screen_height/2 - 40, 15, glutGet(GLUT_ELAPSED_TIME));
   }
   
   int err;  
@@ -108,10 +109,8 @@ void init_app(int *argcp, char **argv)
   
   for (int i = 0; i < NUM_BULLETS; i++)
   {
-    bullets_int(&bullets[i], &ship);
+    bullets_int(&bullets[i]);
   }
-
-
   g_last_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 }
 

@@ -8,8 +8,10 @@
 
 extern float g_last_time;
 
-extern void update_game_state(asteroid_t *ast, float dt);
-extern void update_bullets_state(ship_t *so, bullets_t *bul, float dt);
+//Update the asteroid state
+extern void update_asteroid_state(asteroid_t *ast, float dt);
+//Update the bullets state
+extern void update_bullets_state(bullets_t *bul, float dt);
 extern void on_idle();
 
 #endif //IDLE_H_

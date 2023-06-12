@@ -3,8 +3,6 @@
 
 extern int g_screen_width;
 extern int g_screen_height;
-extern int widthX;
-extern int heightY;
 
 extern void on_reshape(int w, int h);
 
